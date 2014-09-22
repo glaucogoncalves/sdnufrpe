@@ -1,3 +1,6 @@
+#Simple practice of the course Advanced Topics in Computer Networks at UFRPE/Brazil 
+#Author: Kleber Leal and Glauco Gonçalves, PhD
+
 import atexit
 from mininet.net import Mininet
 from mininet.topo import Topo
