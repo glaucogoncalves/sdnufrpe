@@ -1,4 +1,4 @@
-#Simple practice of the course Advanced Topics in Computer Networks at UFRPE/Brazil 
+#Exercise practice of the course Advanced Topics in Computer Networks at UFRPE/Brazil 
 #Author: Kleber Leal and Glauco Goncalves, PhD
 
 import atexit
