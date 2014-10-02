@@ -13,30 +13,29 @@ net = None
 def createTopo():
 	topo=Topo()
 
-        swCore1 = topo.addSwitch('c1')
-        swCore2 = topo.addSwitch('c2')
-        topo.addLink(swCore1, swCore2)
+        swCore1 = topo.addSwitch('s1')
+        swCore2 = topo.addSwitch('s2')
+        #topo.addLink(swCore1, swCore2)
 
 	## Ajuste do parametro de fanout da rede
 	fanout = 2
 
-        # Loop switches
-        lastAggr = 1
-        lastEdge = 1
+        # Switches counter
+        lastSW = 3
         lastHost = 1
 
         # Aggregation switches loop
         for i in irange (1, fanout):
-                swAggregL = topo.addSwitch('a%s' % lastAggr)
+                swAggregL = topo.addSwitch('s%s' % lastSW)
                 topo.addLink(swCore1, swAggregL)
                 topo.addLink(swCore2, swAggregL)
-                lastAggr += 1
+                lastSW += 1
 
                 # Edge switches loop
                 for j in irange (1, fanout):
-                        swEdge = topo.addSwitch('e%s' % lastEdge)
+                        swEdge = topo.addSwitch('s%s' % lastSW)
                         topo.addLink(swAggregL, swEdge)
-                        lastEdge += 1
+                        lastSW += 1
 
                         # Hosts loop
                         for k in irange (1, fanout):
