@@ -1,4 +1,5 @@
 import atexit
+import time
 from mininet.net import Mininet
 from mininet.topo import Topo
 from mininet.cli import CLI
@@ -14,21 +15,18 @@ def createTopo():
 	topo=Topo()
 
         swCore1 = topo.addSwitch('s1')
-        swCore2 = topo.addSwitch('s2')
-        #topo.addLink(swCore1, swCore2)
 
 	## Ajuste do parametro de fanout da rede
 	fanout = 2
 
         # Switches counter
-        lastSW = 3
+        lastSW = 2
         lastHost = 1
 
         # Aggregation switches loop
         for i in irange (1, fanout):
                 swAggregL = topo.addSwitch('s%s' % lastSW)
                 topo.addLink(swCore1, swAggregL)
-                topo.addLink(swCore2, swAggregL)
                 lastSW += 1
 
                 # Edge switches loop
@@ -51,6 +49,7 @@ def startNetwork():
 	net = Mininet( topo=topo, controller=None)
         net.addController( 'c0', controller=RemoteController, ip='127.0.0.1', port=6633 )
 	net.start()
+	time.sleep(20)
 	CLI(net)
 
 def stopNetwork():

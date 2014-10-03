@@ -2,8 +2,6 @@
 #Author: Kleber Leal and Glauco Goncalves, PhD
 
 #!/bin/bash
-echo "Iniciando a controladora remota"
-echo "Aguarde 10 segundos antes de fazer o teste de ping"
-echo "Para interromper a controladora pressione Ctrl+C"
-#/home/mininet/pox/pox.py samples.spanning_tree >/dev/null 2>&1
-/home/mininet/pox/pox.py samples.spanning_tree
+echo "Iniciando o controlador remoto"
+echo "Para interromper o controlador pressione Ctrl+C"
+/home/mininet/pox/pox.py samples.spanning_tree >/dev/null 2>&1
