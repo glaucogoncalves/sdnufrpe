@@ -1,4 +1,4 @@
 sdnufrpe
 ========
 
-This material is related to the discipline Advanced Topics on Computer Networks (tarc.glaucogoncalves.com)
+Auxiliar material of the discipline Advanced Topics on Computer Networks (tarc.glaucogoncalves.com)
