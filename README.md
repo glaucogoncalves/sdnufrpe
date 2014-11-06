@@ -1,4 +1,4 @@
 sdnufrpe
 ========
 
-Auxiliary exercises of the discipline Advanced Topics on Computer Networks (tarc.glaucogoncalves.com)
+Exercises and student projects of the course Advanced Topics on Computer Networks (tarc.glaucogoncalves.com)
