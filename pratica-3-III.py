@@ -15,7 +15,7 @@ from pox.lib.addresses import EthAddr
 from collections import namedtuple
 import os
 ''' Add your imports here ... '''
-
+import csv
 
 
 log = core.getLogger()
@@ -24,6 +24,7 @@ policyFile = "%s/pox/pox/misc/firewall-policies.csv" % os.environ[ 'HOME' ]
 ''' Add your global variables here ... '''
 
 
+firewallRules = []
 
 class Firewall (EventMixin):
 
@@ -33,13 +34,22 @@ class Firewall (EventMixin):
 
     def _handle_ConnectionUp (self, event):    
         ''' Add your logic here ... '''
-        
-
-    
         log.debug("Firewall rules installed on %s", dpidToStr(event.dpid))
+   
+    def readCSVFile(self):
+	with open(policyFile, 'rb') as csvfile:
+		linereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		for row in linereader:
+			global firewallRules
+			firewallRules.append(row)
+			print ', '.join(row)
+
+		
+    
 
 def launch ():
     '''
     Starting the Firewall module
     '''
     core.registerNew(Firewall)
+    Firewall.readCSVFile()

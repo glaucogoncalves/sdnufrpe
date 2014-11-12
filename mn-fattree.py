@@ -18,6 +18,22 @@ from dctopo import FatTreeTopo
 
 net = None
 
+def setLinkStatus(sw1, sw2, on):
+	''' 
+	sw1, sw2: switches that are at the borders of the link to be turned on/off 
+	on: - if True link lnk must be turned ON
+	    - if False link lnk must be turned OFF
+	'''
+	if on:
+		net.configLinkStatus(sw1,sw2,'up')
+	else:
+		net.configLinkStatus(sw1,sw2,'down')
+	
+	if (sw1,sw2) in Links:
+		Links[(sw1,sw2)] = on
+        elif (sw2,sw1) in Links:
+                Links[(sw2,sw1)] = on
+
 def setSwitchStatus(sw, on):
 	''' 
 	sw = switch to be turned on/off 
@@ -36,35 +52,17 @@ def setSwitchStatus(sw, on):
 
 	Switches[sw] = on;
 
-def getSwitchStatus(sw):
-	''' 
-	sw = switch to be turned checked
-	'''
-	return Switches[sw]
-
-def setLinkStatus(sw1, sw2, on):
-	''' 
-	sw1, sw2: switches that are at the borders of the link to be turned on/off 
-	on: - if True link lnk must be turned ON
-	    - if False link lnk must be turned OFF
-	'''
-	if on:
-		net.configLinkStatus(sw1,sw2,'up')
-	else:
-		net.configLinkStatus(sw1,sw2,'down')
-	
-	if (sw1,sw2) in Links:
-		Links[(sw1,sw2)] = on
-        elif (sw2,sw1) in Links:
-                Links[(sw2,sw1)] = on
-
-	pass
-
 def getLinkStatus(sw1, sw2):
 	''' 
 	sw1, sw2: switches that are at the borders of the link to be checked
 	'''
 	return Links[(sw1,sw2)]
+
+def getSwitchStatus(sw):
+	''' 
+	sw = switch to be turned checked
+	'''
+	return Switches[sw]
 
 ''' 
 Switches: Dictionary where each element indicates if a Switch is ON (True) or OFF (False)
