@@ -12,9 +12,78 @@ from mininet.node import RemoteController
 from mininet.util import irange,dumpNodeConnections
 from mininet.link import TCLink
 
+from threading import Timer
+
 from dctopo import FatTreeTopo
 
 net = None
+
+def setSwitchStatus(sw, on):
+	''' 
+	sw = switch to be turned on/off 
+	on = - if True switch sw must be turned ON
+	     - if False switch sw must be turned OFF
+	'''
+	''' Insert your code here '''
+	pass
+
+def getSwitchStatus(sw):
+	''' 
+	sw = switch to be turned checked
+	'''
+	return Switches[sw]
+
+def setLinkStatus(sw1, sw2, on):
+	''' 
+	sw1, sw2: switches that are at the borders of the link to be turned on/off 
+	on: - if True link lnk must be turned ON
+	    - if False link lnk must be turned OFF
+	'''
+	''' Insert your code here '''
+	pass
+
+def getLinkStatus(sw1, sw2):
+	''' 
+	sw1, sw2: switches that are at the borders of the link to be checked
+	'''
+	return Links[(sw1,sw2)]
+
+''' 
+Switches: Dictionary where each element indicates if a Switch is ON (True) or OFF (False)
+Ex:
+{
+	'0_0_0': True,
+	'0_0_1': False
+}
+'''
+global Switches
+Switches = {}
+''' 
+Links: Dictionary where the key is a 2-uple of switches and it indicates if a Link is ON (True) or OFF (False)
+Ex:
+{
+	('0_0_0','0_0_1'): True,
+	('0_0_1','0_1_2'): False
+}
+'''
+global Links
+Links = {}
+
+''' 
+checkingInterval: the time interval (in seconds) for computing energy consumption
+'''
+global checkingInterval
+checkingInterval = 5
+
+def calcEnergy():
+	''' 
+	This function calculates the energy wasted by each switch in the network
+	'''
+	print("===============CALCULATING ENERGY===============")
+	''' Insert your code here '''
+	t = Timer(checkingInterval, calcEnergy, ())
+	t.daemon = True
+	t.start()
 
 def createTopo(k = 4):
 	topo=FatTreeTopo(k)
@@ -43,6 +112,9 @@ def startNetwork():
 		hosts = (hosts + ',' + b)
 	exec('%s = net.hosts' % hosts)
 
+	''' Initialize here the Switches and Links dicts '''
+	''' Insert your code here '''
+
 	# Creating hosts
         hosts = []
         for host in range(1,numberOfHosts+1):
@@ -63,6 +135,10 @@ def startNetwork():
 	os.system('/home/mininet/pox/pox.py riplpox.riplpox --topo=ft,4 --routing=hashed  2>/tmp/teste &')
 
 	time.sleep(30)
+
+	''' Starting computing energy function'''
+	calcEnergy()
+
 	print("Apagando resultados anteriores...")
 	os.system('if test -d /tmp/pratica-fat_results; then rm -rf /tmp/pratica-fat_results; fi')
 	os.system('mkdir /tmp/pratica-fat_results')
