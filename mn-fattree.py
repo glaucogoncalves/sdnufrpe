@@ -25,7 +25,16 @@ def setSwitchStatus(sw, on):
 	     - if False switch sw must be turned OFF
 	'''
 	''' Insert your code here '''
-	pass
+	
+	keyLists = Links.keys()
+	
+	for i in keyLists:
+		if i[0] == sw:
+			setLinkStatus(i[0],i[1],on)
+		elif i[1] == sw:
+			setLinkStatus(i[0],i[1],on)
+
+	Switches[sw] = on;
 
 def getSwitchStatus(sw):
 	''' 
@@ -39,7 +48,16 @@ def setLinkStatus(sw1, sw2, on):
 	on: - if True link lnk must be turned ON
 	    - if False link lnk must be turned OFF
 	'''
-	''' Insert your code here '''
+	if on:
+		net.configLinkStatus(sw1,sw2,'up')
+	else:
+		net.configLinkStatus(sw1,sw2,'down')
+	
+	if (sw1,sw2) in Links:
+		Links[(sw1,sw2)] = on
+        elif (sw2,sw1) in Links:
+                Links[(sw2,sw1)] = on
+
 	pass
 
 def getLinkStatus(sw1, sw2):
@@ -114,6 +132,15 @@ def startNetwork():
 
 	''' Initialize here the Switches and Links dicts '''
 	''' Insert your code here '''
+
+        for i in  topo.links(True):
+                Links[i] = True
+        for i in  topo.switches(True):
+                Switches[i] = True
+
+
+
+
 
 	# Creating hosts
         hosts = []
