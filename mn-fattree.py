@@ -17,21 +17,10 @@ from threading import Timer
 from dctopo import FatTreeTopo
 
 net = None
+SwitchesConsumption = {}
+SwitchesPower = {}
+LinksPower = {}
 
-def setSwitchStatus(sw, on):
-	''' 
-	sw = switch to be turned on/off 
-	on = - if True switch sw must be turned ON
-	     - if False switch sw must be turned OFF
-	'''
-	''' Insert your code here '''
-	pass
-
-def getSwitchStatus(sw):
-	''' 
-	sw = switch to be turned checked
-	'''
-	return Switches[sw]
 
 def setLinkStatus(sw1, sw2, on):
 	''' 
@@ -39,14 +28,53 @@ def setLinkStatus(sw1, sw2, on):
 	on: - if True link lnk must be turned ON
 	    - if False link lnk must be turned OFF
 	'''
-	''' Insert your code here '''
-	pass
+	if on:
+		net.configLinkStatus(sw1,sw2,'up')
+	else:
+		net.configLinkStatus(sw1,sw2,'down')
+	
+	if (sw1,sw2) in Links:
+		Links[(sw1,sw2)] = on
+        elif (sw2,sw1) in Links:
+                Links[(sw2,sw1)] = on
 
+def listSwitchLinks(sw):
+	keyLists = Links.keys()
+	linkList = []
+
+	for i in keyLists:
+                if i[0] == sw:
+			linkList.append(i)
+                elif i[1] == sw:
+			linkList.append(i)
+
+	return linkList
+
+def setSwitchStatus(sw, on):
+        '''
+        sw = switch to be turned on/off
+        on = - if True switch sw must be turned ON
+             - if False switch sw must be turned OFF
+        '''
+        ''' Insert your code here '''
+	
+	linkList = listSwitchLinks(sw)
+	for j in linkList:
+		setLinkStatus(j[0],j[1],on)
+
+        Switches[sw] = on;
+	
 def getLinkStatus(sw1, sw2):
 	''' 
 	sw1, sw2: switches that are at the borders of the link to be checked
 	'''
 	return Links[(sw1,sw2)]
+
+def getSwitchStatus(sw):
+	''' 
+	sw = switch to be turned checked
+	'''
+	return Switches[sw]
 
 ''' 
 Switches: Dictionary where each element indicates if a Switch is ON (True) or OFF (False)
@@ -79,8 +107,30 @@ def calcEnergy():
 	''' 
 	This function calculates the energy wasted by each switch in the network
 	'''
+	powerList = SwitchesPower.items()
 	print("===============CALCULATING ENERGY===============")
-	''' Insert your code here '''
+	result = 0
+	for i in powerList:
+		if not Switches[i[0]]:
+			switchPower = 0
+		else:
+			linkList = listSwitchLinks(i[0])
+
+			portPower = 0
+			for j in linkList:
+				if Links[j]:
+					portPower += LinksPower[j]*checkingInterval/3600.0
+		
+		
+			switchPower = (i[1]*(checkingInterval/3600.0))+portPower	
+		
+
+		print ("Switch "+ i[0]+" =  "+str(switchPower)+" Wh") 
+
+		result = result + switchPower
+
+	print ("*** Total wast = "+str(result)+" Wh")
+			
 	t = Timer(checkingInterval, calcEnergy, ())
 	t.daemon = True
 	t.start()
@@ -115,6 +165,17 @@ def startNetwork():
 	''' Initialize here the Switches and Links dicts '''
 	''' Insert your code here '''
 
+	for i in  topo.links(True):
+		Links[i] = True
+		LinksPower[i] = 0.5
+
+	print topo.switches(True)
+        for i in  topo.switches(True):
+                Switches[i] = True
+		SwitchesPower[i] = random.randint(100, 2000)
+		SwitchesConsumption[i] = 0
+
+
 	# Creating hosts
         hosts = []
         for host in range(1,numberOfHosts+1):
@@ -132,7 +193,7 @@ def startNetwork():
 
 	print("Iniciando POX")
 	#os.system('/home/mininet/pox/pox.py samples.spanning_tree 2>/dev/null &')
-	os.system('/home/mininet/pox/pox.py riplpox.riplpox --topo=ft,4 --routing=hashed  2>/tmp/teste &')
+	os.system('/home/mininet/pox/pox.py  misc.monitor riplpox.riplpox --topo=ft,4 --routing=hashed  2>/tmp/teste &')
 
 	time.sleep(30)
 
@@ -154,6 +215,8 @@ def startNetwork():
 		print(interval,duration)
 		print('Iniciando teste %s: Cliente: %s ; Servidor: %s' % (testCount,HostClient,HostServer))
 		exec('%s.cmd("iperf -c %s --time %s >/tmp/pratica-fat_results/%s-%s.test &")' % (HostClient,HostServer,duration,testCount,HostClient))	
+		if overallDuration > 60:
+			setSwitchStatus("4_1_1", False)
 		time.sleep(interval)
 		overallDuration = overallDuration + interval
 		testCount = testCount + 1

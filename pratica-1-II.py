@@ -6,6 +6,7 @@ from mininet.net import Mininet
 from mininet.topo import Topo
 from mininet.cli import CLI
 from mininet.log import info,setLogLevel
+from mininet.node import RemoteController
 
 net = None
 
@@ -27,7 +28,7 @@ def createTopo():
         topo.addLink('h1','s2')
         topo.addLink('h2','s2')
         topo.addLink('h3','s3')
-        topo.addLink('h4','h3')
+        topo.addLink('h4','s3')
         return topo
 
 def startNetwork():
