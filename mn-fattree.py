@@ -126,6 +126,7 @@ def calcEnergy():
 		
 
 		print ("Switch "+ i[0]+" =  "+str(switchPower)+" Wh") 
+		SwitchesConsumption[i[0]] = switchPower
 
 		result = result + switchPower
 
@@ -215,8 +216,8 @@ def startNetwork():
 		print(interval,duration)
 		print('Iniciando teste %s: Cliente: %s ; Servidor: %s' % (testCount,HostClient,HostServer))
 		exec('%s.cmd("iperf -c %s --time %s >/tmp/pratica-fat_results/%s-%s.test &")' % (HostClient,HostServer,duration,testCount,HostClient))	
-		if overallDuration > 60:
-			setSwitchStatus("4_1_1", False)
+		#if overallDuration > 60:
+		#	setSwitchStatus("4_1_1", False)
 		time.sleep(interval)
 		overallDuration = overallDuration + interval
 		testCount = testCount + 1
