@@ -1,0 +1,5 @@
+# INSTALL MYSQL
+sudo apt-get install mysql-server
+
+# WorkBench
+sudo apt-get install mysql-workbench
