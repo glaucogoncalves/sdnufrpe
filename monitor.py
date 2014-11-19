@@ -21,8 +21,11 @@ import pox.openflow.libopenflow_01 as of
 from pox.lib.util import dpidToStr
 from pox.lib.recoco import Timer
 from pox.openflow.of_json import *
+import MySQLdb
 
 log = core.getLogger()
+global tempo
+tempo = 5
 
 def _timer_func ():
   for connection in core.openflow._connections.values():
@@ -31,13 +34,52 @@ def _timer_func ():
 
 def _handle_portstats_received (event):
   stats = flow_stats_to_list(event.stats)
-  for i in stats:
-    log.info(i['port_no'])
+  #global tempo
+  print "TEMPOOOO: "+str(tempo)
+  tempo += 5
+  insertDB(dpidToStr(event.connection.dpid),stats,tempo)
+  #for i in stats:
+   # log.info(i['port_no'])
   #log.info("PortStatsReceived from %s: %s",dpidToStr(event.connection.dpid), stats)
 
 def launch ():
   # attach handsers to listners
-  core.openflow.addListenerByName("PortStatsReceived",_handle_portstats_received) 
-
+  core.openflow.addListenerByName("PortStatsReceived",_handle_portstats_received)
+  print "TEMPOOOO: "+str(tempo)
   # timer set to execute every five seconds
   Timer(5, _timer_func, recurring=True)
+
+
+# MYSQL 
+def insertDB(dpid, stats, tempo):
+    [db,cur] = connectDB();
+    for i in stats:
+        rx_bytes = i['rx_bytes']
+        tx_bytes = i['tx_bytes']
+        port_no = i['port_no']
+        sql = "INSERT INTO `sdn`.`stats` (`switch`, `rx_bytes`, `tx_bytes`, `port_no`, `time`) VALUES ('"+str(dpid)+"', "+str(rx_bytes)+", "+str(tx_bytes)+", "+str(port_no)+","+tempo+");"
+        print sql
+        cur.execute(sql)
+        db.commit()
+
+    cur.close()
+    db.close()
+         
+def connectDB():
+    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                     user="root", # your username
+                      passwd="sdn2014", # your password
+                      db="sdn") # name of the data base
+
+    # you must create a Cursor object. It will let
+    #  you execute all the queries you need
+    cur = db.cursor() 
+
+    # Use all the SQL you like
+   # cur.execute("SELECT * FROM stats")
+
+    # print all the first cell of all the rows
+ #   for row in cur.fetchall() :
+  #      print row
+
+    return [db,cur]
