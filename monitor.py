@@ -24,19 +24,18 @@ from pox.openflow.of_json import *
 import MySQLdb
 
 log = core.getLogger()
-global tempo
-tempo = 5
+tempo = 0
 
 def _timer_func ():
+  global tempo
+  tempo += 5
   for connection in core.openflow._connections.values():
     connection.send(of.ofp_stats_request(body=of.ofp_port_stats_request()))
   log.info("Sent %i flow/port stats request(s)", len(core.openflow._connections))
 
 def _handle_portstats_received (event):
+  global tempo
   stats = flow_stats_to_list(event.stats)
-  #global tempo
-  print "TEMPOOOO: "+str(tempo)
-  tempo += 5
   insertDB(dpidToStr(event.connection.dpid),stats,tempo)
   #for i in stats:
    # log.info(i['port_no'])
@@ -45,7 +44,6 @@ def _handle_portstats_received (event):
 def launch ():
   # attach handsers to listners
   core.openflow.addListenerByName("PortStatsReceived",_handle_portstats_received)
-  print "TEMPOOOO: "+str(tempo)
   # timer set to execute every five seconds
   Timer(5, _timer_func, recurring=True)
 
@@ -57,10 +55,10 @@ def insertDB(dpid, stats, tempo):
         rx_bytes = i['rx_bytes']
         tx_bytes = i['tx_bytes']
         port_no = i['port_no']
-        sql = "INSERT INTO `sdn`.`stats` (`switch`, `rx_bytes`, `tx_bytes`, `port_no`, `time`) VALUES ('"+str(dpid)+"', "+str(rx_bytes)+", "+str(tx_bytes)+", "+str(port_no)+","+tempo+");"
-        print sql
-        cur.execute(sql)
-        db.commit()
+	if not i['port_no'] == 65534:
+	        sql = "INSERT INTO `sdn`.`stats` (`switch`, `rx_bytes`, `tx_bytes`, `port_no`, `time`) VALUES ('"+str(dpid)+"', "+str(rx_bytes)+", "+str(tx_bytes)+", "+str(port_no)+","+str(tempo)+");"
+        	cur.execute(sql)
+	        db.commit()
 
     cur.close()
     db.close()
