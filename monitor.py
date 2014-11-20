@@ -55,10 +55,10 @@ def insertDB(dpid, stats, tempo):
         rx_bytes = i['rx_bytes']
         tx_bytes = i['tx_bytes']
         port_no = i['port_no']
-	if not i['port_no'] == 65534:
-	        sql = "INSERT INTO `sdn`.`stats` (`switch`, `rx_bytes`, `tx_bytes`, `port_no`, `time`) VALUES ('"+str(dpid)+"', "+str(rx_bytes)+", "+str(tx_bytes)+", "+str(port_no)+","+str(tempo)+");"
-        	cur.execute(sql)
-	        db.commit()
+        if not i['port_no'] == 65534:
+          sql = "INSERT INTO `sdn`.`stats` (`switch`, `rx_bytes`, `tx_bytes`, `port_no`, `time`) VALUES ('"+str(dpid)+"', "+str(rx_bytes)+", "+str(tx_bytes)+", "+str(port_no)+","+str(tempo)+");"
+          cur.execute(sql)
+          db.commit()
 
     cur.close()
     db.close()
@@ -74,10 +74,11 @@ def connectDB():
     cur = db.cursor() 
 
     # Use all the SQL you like
-   # cur.execute("SELECT * FROM stats")
+    #cur.execute("SELECT * FROM stats")
 
-    # print all the first cell of all the rows
- #   for row in cur.fetchall() :
-  #      print row
+   # print all the first cell of all the rows
+    #for row in cur.fetchall() :
+     #  print row
 
     return [db,cur]
+

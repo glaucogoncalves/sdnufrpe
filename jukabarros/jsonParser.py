@@ -39,5 +39,5 @@ def connectDB():
     return [db,cur]
 
 
-#insertDB("00-00-00-03-03-01", lista, "2")
+insertDB("00-00-00-03-03-01", lista, "2")
 #connectDB()
