@@ -3,3 +3,10 @@ sudo apt-get install mysql-server
 
 # WorkBench
 sudo apt-get install mysql-workbench
+
+# Liberando Acesso Externo
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'sdn2014' WITH GRANT OPTION;
+
+Editar o arquivo /etc/mysql/my.cnf
+Comentar a linha 47 (bind-address = 127.0.0.1)
