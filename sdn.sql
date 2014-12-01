@@ -1,64 +1,67 @@
--- MySQL dump 10.13  Distrib 5.5.40, for debian-linux-gnu (i686)
---
--- Host: localhost    Database: sdn
--- ------------------------------------------------------
--- Server version	5.5.40-0ubuntu0.14.04.1
+-- MySQL Workbench Forward Engineering
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
---
--- Current Database: `sdn`
---
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema sdn
+-- -----------------------------------------------------
 
-/*!40000 DROP DATABASE IF EXISTS `sdn`*/;
+-- -----------------------------------------------------
+-- Schema sdn
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `sdn` DEFAULT CHARACTER SET latin1 ;
+USE `sdn` ;
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `sdn` /*!40100 DEFAULT CHARACTER SET latin1 */;
+-- -----------------------------------------------------
+-- Table `sdn`.`link_energy`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sdn`.`link_energy` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `switch_src` VARCHAR(45) NULL DEFAULT NULL,
+  `switch_dst` VARCHAR(45) NULL DEFAULT NULL,
+  `time` INT(11) NULL DEFAULT NULL,
+  `wh` FLOAT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 1521
+DEFAULT CHARACTER SET = latin1;
 
-USE `sdn`;
 
---
--- Table structure for table `stats`
---
+-- -----------------------------------------------------
+-- Table `sdn`.`stats`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sdn`.`stats` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `switch` VARCHAR(45) NOT NULL,
+  `tx_bytes` INT(100) NULL DEFAULT NULL,
+  `rx_bytes` INT(100) NULL DEFAULT NULL,
+  `port_no` INT(10) NULL DEFAULT NULL,
+  `time` INT(10) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 10005
+DEFAULT CHARACTER SET = latin1;
 
-DROP TABLE IF EXISTS `stats`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stats` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `switch` varchar(45) NOT NULL,
-  `tx_bytes` int(100) DEFAULT NULL,
-  `rx_bytes` int(100) DEFAULT NULL,
-  `port_no` int(10) DEFAULT NULL,
-  `time` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `stats`
---
+-- -----------------------------------------------------
+-- Table `sdn`.`switch_energy`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sdn`.`switch_energy` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `switch` VARCHAR(45) NULL DEFAULT NULL,
+  `time` INT(11) NULL DEFAULT NULL,
+  `wh` FLOAT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 381
+DEFAULT CHARACTER SET = latin1;
 
-LOCK TABLES `stats` WRITE;
-/*!40000 ALTER TABLE `stats` DISABLE KEYS */;
-/*!40000 ALTER TABLE `stats` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2014-11-20 15:29:59
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

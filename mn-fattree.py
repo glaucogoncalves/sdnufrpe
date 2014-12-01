@@ -11,6 +11,7 @@ from functools import partial
 from mininet.node import RemoteController
 from mininet.util import irange,dumpNodeConnections
 from mininet.link import TCLink
+import MySQLdb
 
 from threading import Timer
 
@@ -20,6 +21,9 @@ net = None
 SwitchesConsumption = {}
 SwitchesPower = {}
 LinksPower = {}
+
+global currentTimee
+currentTime = 0
 
 
 def setLinkStatus(sw1, sw2, on):
@@ -103,6 +107,7 @@ checkingInterval: the time interval (in seconds) for computing energy consumptio
 global checkingInterval
 checkingInterval = 5
 
+
 def calcEnergy():
 	''' 
 	This function calculates the energy wasted by each switch in the network
@@ -110,6 +115,8 @@ def calcEnergy():
 	powerList = SwitchesPower.items()
 	print("===============CALCULATING ENERGY===============")
 	result = 0
+	global currentTime
+	currentTime = currentTime + checkingInterval
 	for i in powerList:
 		if not Switches[i[0]]:
 			switchPower = 0
@@ -120,12 +127,17 @@ def calcEnergy():
 			for j in linkList:
 				if Links[j]:
 					portPower += LinksPower[j]*checkingInterval/3600.0
-		
+			                insertPortDB(j[0],j[1], portPower, currentTime)
+
+				else:
+			                insertPortDB(j[0],j[1] ,0, currentTime)
+	
 		
 			switchPower = (i[1]*(checkingInterval/3600.0))+portPower	
 		
 
 		print ("Switch "+ i[0]+" =  "+str(switchPower)+" Wh") 
+		insertSwtDB(i[0], switchPower, currentTime)
 		SwitchesConsumption[i[0]] = switchPower
 
 		result = result + switchPower
@@ -227,6 +239,61 @@ def startNetwork():
 	os.system("kill -15 `ps -ef | grep pox | egrep -v grep | awk '{print $2}'`")
 	os.system("kill -15 `ps -ef | grep iperf | egrep -v grep | awk '{print $2}'`")
 	net.stop()
+# MYSQL 
+def insertSwtDB(switch,wh,tempo):
+    [db,cur] = connectDB();
+    
+    swtParts = switch.split("_")
+    swtName = "00:00:00:0"+swtParts[0]+":0"+swtParts[1]+":0"+swtParts[2]
+
+    sql = "INSERT INTO `sdn`.`switch_energy` (`switch`, `time`, `wh`) VALUES ( '"+str(swtName)+"', "+str(tempo)+","+str(wh)+");"
+    print sql 
+    cur.execute(sql)
+    db.commit()
+
+    cur.close()
+    db.close()
+         
+
+def insertPortDB(switch1,switch2,wh,tempo):
+    [db,cur] = connectDB();
+
+    swtParts1 = switch1.split("_")
+    swtName1 = "00:00:00:0"+swtParts1[0]+":0"+swtParts1[1]+":0"+swtParts1[2]
+
+    swtParts2 = switch2.split("_")
+    swtName2 = "00:00:00:0"+swtParts2[0]+":0"+swtParts2[1]+":0"+swtParts2[2]
+
+
+    sql = "INSERT INTO `sdn`.`link_energy` (`switch_src`, `switch_dst`,`time`, `wh`) VALUES ( '"+str(swtName1)+"','"+str(swtName2)+"' ,"+str(tempo)+","+str(wh)+");"
+    print sql
+    cur.execute(sql)
+    db.commit()
+
+    cur.close()
+    db.close()
+
+
+
+
+def connectDB():
+    db = MySQLdb.connect(host="localhost", # your host, usually localhost
+                     user="root", # your username
+                      passwd="sdn2014", # your password
+                      db="sdn") # name of the data base
+
+    # you must create a Cursor object. It will let
+    #  you execute all the queries you need
+    cur = db.cursor() 
+
+    # Use all the SQL you like
+    #cur.execute("SELECT * FROM stats")
+
+   # print all the first cell of all the rows
+    #for row in cur.fetchall() :
+     #  print row
+
+    return [db,cur]
 
 def stopNetwork():
 	if net is not None:
