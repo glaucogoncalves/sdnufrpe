@@ -112,8 +112,13 @@ def calcEnergy():
 	''' 
 	This function calculates the energy wasted by each switch in the network
 	'''
+	'''Programming next call of this function'''
+	t = Timer(checkingInterval, calcEnergy, ())
+	t.daemon = True
+	t.start()
+
 	powerList = SwitchesPower.items()
-	print("===============CALCULATING ENERGY===============")
+	#print("===============CALCULATING ENERGY===============")
 	result = 0
 	global currentTime
 	currentTime = currentTime + checkingInterval
@@ -136,17 +141,17 @@ def calcEnergy():
 			switchPower = (i[1]*(checkingInterval/3600.0))+portPower	
 		
 
-		print ("Switch "+ i[0]+" =  "+str(switchPower)+" Wh") 
+		#print ("Switch "+ i[0]+" =  "+str(switchPower)+" Wh") 
 		insertSwtDB(i[0], switchPower, currentTime)
 		SwitchesConsumption[i[0]] = switchPower
 
 		result = result + switchPower
 
-	print ("*** Total wast = "+str(result)+" Wh")
+	#print ("*** Total wast = "+str(result)+" Wh")
 			
-	t = Timer(checkingInterval, calcEnergy, ())
-	t.daemon = True
-	t.start()
+	#t = Timer(checkingInterval, calcEnergy, ())
+	#t.daemon = True
+	#t.start()
 
 def createTopo(k = 4):
 	topo=FatTreeTopo(k)
@@ -154,7 +159,7 @@ def createTopo(k = 4):
 
 def startNetwork():
 	k = 4
-	testTime = 120
+	testTime = 300
 	#numberOfSwitches = k**2 + (k/2)**2
 	numberOfHosts = (k**3)/4
 	numberOfHostsPerPod = (k/2)**2
@@ -204,14 +209,14 @@ def startNetwork():
 				exec('%s.cmd("iperf -s &")' % hostID)
 				IPHosts.append('10.%s.%s.%s' % (pod,edge,host))
 
+	''' Starting computing energy function'''
+	calcEnergy()
+
 	print("Iniciando POX")
 	#os.system('/home/mininet/pox/pox.py samples.spanning_tree 2>/dev/null &')
 	os.system('/home/mininet/pox/pox.py  misc.monitor riplpox.riplpox --topo=ft,4 --routing=hashed  2>/tmp/teste &')
 
 	time.sleep(30)
-
-	''' Starting computing energy function'''
-	calcEnergy()
 
 	print("Apagando resultados anteriores...")
 	os.system('if test -d /tmp/pratica-fat_results; then rm -rf /tmp/pratica-fat_results; fi')
@@ -244,10 +249,10 @@ def insertSwtDB(switch,wh,tempo):
     [db,cur] = connectDB();
     
     swtParts = switch.split("_")
-    swtName = "00:00:00:0"+swtParts[0]+":0"+swtParts[1]+":0"+swtParts[2]
+    swtName = "00-00-00-0"+swtParts[0]+"-0"+swtParts[1]+"-0"+swtParts[2]
 
     sql = "INSERT INTO `sdn`.`switch_energy` (`switch`, `time`, `wh`) VALUES ( '"+str(swtName)+"', "+str(tempo)+","+str(wh)+");"
-    print sql 
+    #print sql 
     cur.execute(sql)
     db.commit()
 
@@ -259,22 +264,19 @@ def insertPortDB(switch1,switch2,wh,tempo):
     [db,cur] = connectDB();
 
     swtParts1 = switch1.split("_")
-    swtName1 = "00:00:00:0"+swtParts1[0]+":0"+swtParts1[1]+":0"+swtParts1[2]
+    swtName1 = "00-00-00-0"+swtParts1[0]+"-0"+swtParts1[1]+"-0"+swtParts1[2]
 
     swtParts2 = switch2.split("_")
-    swtName2 = "00:00:00:0"+swtParts2[0]+":0"+swtParts2[1]+":0"+swtParts2[2]
+    swtName2 = "00-00-00-0"+swtParts2[0]+"-0"+swtParts2[1]+"-0"+swtParts2[2]
 
 
     sql = "INSERT INTO `sdn`.`link_energy` (`switch_src`, `switch_dst`,`time`, `wh`) VALUES ( '"+str(swtName1)+"','"+str(swtName2)+"' ,"+str(tempo)+","+str(wh)+");"
-    print sql
+    #print sql
     cur.execute(sql)
     db.commit()
 
     cur.close()
     db.close()
-
-
-
 
 def connectDB():
     db = MySQLdb.connect(host="localhost", # your host, usually localhost
