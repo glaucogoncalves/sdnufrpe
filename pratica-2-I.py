@@ -24,7 +24,7 @@ def startNetwork():
 	net = Mininet( topo=topo, controller=None)
         net.addController( 'c0', controller=RemoteController, ip='127.0.0.1', port=6633 )
 	net.start()
-	#time.sleep(5)
+	time.sleep(5)
 	#net.pingAll()
 	#net.iperf()
 	CLI(net)
