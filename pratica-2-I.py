@@ -15,20 +15,7 @@ def createTopo():
 	topo=Topo()
 
 	#Crie sua topologia aqui
-	topo.addHost('h1')
-	topo.addHost('h2')
-	topo.addHost('h3')
 
-	topo.addSwitch('s1')
-	topo.addSwitch('s2')
-	topo.addSwitch('s3')
-
-	topo.addLink('h1','s1')
-	topo.addLink('h2','s2')
-	topo.addLink('h3','s3')
-	topo.addLink('s1','s2')
-	topo.addLink('s2','s3')
-	topo.addLink('s3','s1')
 	return topo
 
 def startNetwork():
@@ -37,7 +24,7 @@ def startNetwork():
 	net = Mininet( topo=topo, controller=None)
         net.addController( 'c0', controller=RemoteController, ip='127.0.0.1', port=6633 )
 	net.start()
-	time.sleep(5)
+	#time.sleep(5)
 	#net.pingAll()
 	#net.iperf()
 	CLI(net)
