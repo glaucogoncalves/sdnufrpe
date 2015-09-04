@@ -1,1 +1,0 @@
-mysqldump -uroot -psdn2014 sdn --databases --add-drop-database > teste.sql
